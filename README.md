@@ -384,3 +384,76 @@ User.findByIdAndUpdate('5da606dd2b29c934647a88b4', { age: 1 }).then((user) => {
    console.log(error);
 });
 ```
+### Async/Await
+Async function always return a promise. That promise is fulfilled with the value you the developer choose to return from the function.
+```javascript
+const doWork = () => {
+}
+doWork() // undefined
+```
+```javascript
+const doWork = async () => {
+}
+doWork() // Promise {<resolved>: undefined} 
+```
+If we throw an error from our async function that's going to be rejecting the promise.
+```javascript
+const doWork = async () => {
+   throw new Error('Something went wrong');
+};
+
+doWork().then((result) => {
+   console.log('result', result);
+}).catch((error) => {
+   console.log(error); // Error: Something went wrong
+});
+```
+The minus of promise chaining method is that there is no of a common scope for the values. With async/await we can provide it.
+```javascript
+const add = (a, b) => {
+   return new Promise((resolve, reject) => {
+      seTimeout(() => {
+         resolve(a + b);
+      }, 2000)
+   }
+}
+
+const doWork = async () => {
+   const sum = await add(1, 99);
+   const sum2 = await add(sum, 50);
+   const sum3 = await add(sum2, 3);
+   return sum3;
+}
+
+doWork().then((result) => {
+   console.log('result', result);
+}).catch((error) => {
+   console.log(error);
+});
+```
+Reject with async/await
+```javascript
+const add = (a, b) => {
+   return new Promise((resolve, reject) => {
+      seTimeout(() => {
+         if (a < 0 || b < 0) {
+            return reject('Numbers must be greater than 0');
+         }
+         resolve(a + b);
+      }, 2000)
+   }
+}
+
+const doWork = async () => {
+   const sum = await add(1, -99); // invoke catch after 2sec and non of the code down below not going to run
+   const sum2 = await add(sum, 50);
+   const sum3 = await add(sum2, -3); // invoke catch after 6sec
+   return sum3;
+}
+
+doWork().then((result) => {
+   console.log('result', result);
+}).catch((error) => {
+   console.log(error);
+});
+```

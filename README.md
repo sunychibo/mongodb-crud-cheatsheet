@@ -294,8 +294,9 @@ newTask.save().then((result) => {
 ```
 
 ### Promises
+#### Callback versus Promise
+- Common Asynchronous Callback
 ```javascript
-  //========= Common Asynchronous Callback =========/
   const doWorkCallback = (callback) => {
     setTimeout(() => {
       // console.log('This is my error', undefined);
@@ -309,8 +310,9 @@ newTask.save().then((result) => {
     }
     console.log(result);
   });
-
-  //=================== Promise ===================/
+```
+- Promise
+```javascript
   const doWorkPromise = new Promise((resolve, reject) => {
     setTimeout(() => {
       // reject('Things went wrong!');
@@ -323,12 +325,62 @@ newTask.save().then((result) => {
   }).catch((error) => {
     console.log('Error', error);
   });
+```
+<pre>
+                                fulfilled (resolved)
+                             /
+   Promise    -- pending -->
+                             \
+                                rejected
+</pre>
 
-  //
-  //                              fulfilled (resolved)
-  //                           /
-  // Promise    -- pending -->
-  //                           \
-  //                              rejected
-  //
+#### Promises in sequence
+- Nested promises
+```javascript
+const add = (a, b) => {
+   return new Promise((resolve, reject) => {
+      seTimeout(() => {
+         resolve(a + b);
+      }, 2000)
+   }
+}
+
+add(1, 2).then((sum) => {
+   add(sum, 3).then((sum) => {
+      console.log(sum);
+   }).catch((error) => {
+      console.log(error);
+   });
+}).catch((error) => {
+   console.log(error);
+});
+```
+- Promise chaining
+```javascript
+const add = (a, b) => {
+   return new Promise((resolve, reject) => {
+      seTimeout(() => {
+         resolve(a + b);
+      }, 2000)
+   }
+}
+
+add(1, 1).then((sum) => {
+   return add(sum, 5); // return promise
+}).then((sum2) => {
+   console.log(sum2);
+}).catch((error) => {
+   console.log(error);
+});
+
+// Mongoose promise chaining example
+// 2nd argument is the object which contains the updates we want to apply
+User.findByIdAndUpdate('5da606dd2b29c934647a88b4', { age: 1 }).then((user) => {
+   console.log(user);
+   return User.countDocuments({ age: 1 });
+}).then((count) => {
+   console.log(count);
+}).catch((error) => { // handle any errors of this two promises
+   console.log(error);
+});
 ```
